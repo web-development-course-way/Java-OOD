@@ -1,0 +1,25 @@
+version: "3"
+services:
+  postgres-db:
+    build: ./docker/postgres
+    image: java-postgres-sp-db
+    container_name: "java-postgres-sp-db"
+    environment:
+      - POSTGRES_USER=${DATABASE_USERNAME:-topcoder}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-Topcoder123}
+      - POSTGRES_DB=${DATABASE_NAME:-topcoder}
+    ports:
+      - "5432:5432"
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
+    image: java-postgres-sp-api
+    container_name: "java-postgres-sp-api"
+    ports:
+      - "8080:8080"
+    restart: on-failure  
+    links:
+      - "postgres-db:database-host"  
+    depends_on:
+      - "postgres-db"
